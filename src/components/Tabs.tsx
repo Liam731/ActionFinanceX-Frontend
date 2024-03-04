@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import MintFakeBAYC from "./MintFakeBAYC";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import CalleteralPool from "./CalleteralPool";
 export default function Tabs() {
   const [activeTab, setActiveTab] = useState(0);
   return (
@@ -31,6 +32,13 @@ export default function Tabs() {
                 activeTab === 1 ? "border-b-4 border-teal-200 text-teal-200" : ""
               }`}
             >
+              Collateral pool   
+            </Tab>
+            <Tab
+              className={`px-4 py-2 rounded-t-lg ${
+                activeTab === 2 ? "border-b-4 border-teal-200 text-teal-200" : ""
+              }`}
+            >
               Dutch Auction
             </Tab>
           </div>
@@ -38,10 +46,14 @@ export default function Tabs() {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <MintFakeBAYC />
+            
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <MintFakeBAYC />
+            <CalleteralPool />
+          </TabPanel>
+          <TabPanel>
+            <p>Three!</p>
           </TabPanel>
         </TabPanels>
       </ChakraTabs>

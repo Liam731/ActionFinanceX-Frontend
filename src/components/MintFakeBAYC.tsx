@@ -5,7 +5,7 @@ import {
   useContractWrite,
   usePrepareContractWrite,
 } from "wagmi";
-import nftABI from "../abis/nftABI.json";
+import FakeBAYC from "../abis/FakeBAYC.json";
 import { CONFIG } from "../../config";
 
 export default function MintFakeBAYC() {
@@ -13,20 +13,20 @@ export default function MintFakeBAYC() {
   const [ totalSupply, setTotalSupply ] = useState<String>("0");
   const { address } = useAccount();
   const { config } = usePrepareContractWrite({
-    address: CONFIG.NFT_CONTRACT_ADDRESS,
-    abi: nftABI,
+    address: CONFIG.FBAYC_CONTRACT_ADDRESS,
+    abi: FakeBAYC,
     functionName: "mint",
   });
 
   const { data: txHash, write, isSuccess, reset } = useContractWrite(config);
   const { data: total, refetch: refetchTotalSupply } = useContractRead({
-    address: CONFIG.NFT_CONTRACT_ADDRESS,
-    abi: nftABI,
+    address: CONFIG.FBAYC_CONTRACT_ADDRESS,
+    abi: FakeBAYC,
     functionName: "totalSupply",
   });
   const { data: amount, refetch: refetchBalance } = useContractRead({
-    address: CONFIG.NFT_CONTRACT_ADDRESS,
-    abi: nftABI,
+    address: CONFIG.FBAYC_CONTRACT_ADDRESS,
+    abi: FakeBAYC,
     functionName: "balanceOf",
     args: [address],
   });
@@ -43,21 +43,13 @@ export default function MintFakeBAYC() {
     }
   }, [amount]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      refetchTotalSupply();
-      refetchBalance();
-      reset();
-    }
-  }, [isSuccess]);
-
   const handleRefresh = () => {
     window.location.reload();
   };
 
   return (
     <div className = "">
-      <p>My NFT Balance: {balance}</p>
+      <p>Your FBAYC Balance:: {balance}</p>
       <button 
         disabled={!write}
         onClick={() => write?.()}

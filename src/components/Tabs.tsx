@@ -8,7 +8,13 @@ import {
 } from "@chakra-ui/react";
 import MintFakeBAYC from "./MintFakeBAYC";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import CalleteralPool from "./CalleteralPool";
+import ColleteralPool from "./ColleteralPool";
+import UserStatus from "./UserStatus";
+import SToken from "./SToken";
+import Profile from "./Profile";
+import DutchAuction from "./AuctionStatus";
+import AuctionStatus from "./AuctionStatus";
+import AuctionInfo from "./AuctionInfo";
 export default function Tabs() {
   const [activeTab, setActiveTab] = useState(0);
   return (
@@ -22,21 +28,27 @@ export default function Tabs() {
           <div className="flex flex-row">
             <Tab
               className={`px-4 py-2 rounded-t-lg ${
-                activeTab === 0 ? "border-b-4 border-teal-200 text-teal-200" : ""
+                activeTab === 0
+                  ? "border-b-4 border-teal-200 text-teal-200"
+                  : ""
               }`}
             >
               Your status
             </Tab>
             <Tab
               className={`px-4 py-2 rounded-t-lg ${
-                activeTab === 1 ? "border-b-4 border-teal-200 text-teal-200" : ""
+                activeTab === 1
+                  ? "border-b-4 border-teal-200 text-teal-200"
+                  : ""
               }`}
             >
-              Collateral pool   
+              Collateral pool
             </Tab>
             <Tab
               className={`px-4 py-2 rounded-t-lg ${
-                activeTab === 2 ? "border-b-4 border-teal-200 text-teal-200" : ""
+                activeTab === 2
+                  ? "border-b-4 border-teal-200 text-teal-200"
+                  : ""
               }`}
             >
               Dutch Auction
@@ -46,14 +58,16 @@ export default function Tabs() {
         </TabList>
         <TabPanels>
           <TabPanel>
-            
+            <UserStatus />
           </TabPanel>
           <TabPanel>
             <MintFakeBAYC />
-            <CalleteralPool />
+            <ColleteralPool />
+            <SToken />
           </TabPanel>
           <TabPanel>
-            <p>Three!</p>
+            <AuctionStatus />
+            <AuctionInfo />
           </TabPanel>
         </TabPanels>
       </ChakraTabs>

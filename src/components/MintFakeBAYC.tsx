@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
   useAccount,
   useContractRead,
@@ -9,61 +9,60 @@ import FakeBAYC from "../abis/FakeBAYC.json";
 import { CONFIG } from "../../config";
 
 export default function MintFakeBAYC() {
-  const [ balance, setBalance ] = useState<String>("0");
-  const [ totalSupply, setTotalSupply ] = useState<String>("0");
+  const [approveTokenId, setApproveTokenId] = React.useState("");
+  const handleChange = (event: {
+    target: { value: React.SetStateAction<string> };
+  }) => setApproveTokenId(event.target.value);
+
   const { address } = useAccount();
-  const { config } = usePrepareContractWrite({
+  // mint button
+  const { config: mintConfig } = usePrepareContractWrite({
     address: CONFIG.FBAYC_CONTRACT_ADDRESS,
     abi: FakeBAYC,
     functionName: "mint",
   });
 
-  const { data: txHash, write, isSuccess, reset } = useContractWrite(config);
-  const { data: total, refetch: refetchTotalSupply } = useContractRead({
+  const {
+    data: txHash,
+    write: mintWrite,
+    isSuccess,
+    reset,
+  } = useContractWrite(mintConfig);
+
+  // approve button
+  const { config: approveConfig } = usePrepareContractWrite({
     address: CONFIG.FBAYC_CONTRACT_ADDRESS,
     abi: FakeBAYC,
-    functionName: "totalSupply",
-  });
-  const { data: amount, refetch: refetchBalance } = useContractRead({
-    address: CONFIG.FBAYC_CONTRACT_ADDRESS,
-    abi: FakeBAYC,
-    functionName: "balanceOf",
-    args: [address],
+    functionName: "approve",
+    args: [CONFIG.POOL_CONTRACT_ADDRESS, approveTokenId],
   });
 
-  useEffect(() => {
-    if (total) {
-      setTotalSupply(total.toString());
-    }
-  }, [total]);
-
-  useEffect(() => {
-    if (amount) {
-      setBalance(amount.toString());
-    }
-  }, [amount]);
-
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+  const { write: approveWrite } = useContractWrite(approveConfig);
 
   return (
-    <div className = "">
-      <p>Your FBAYC Balance:: {balance}</p>
-      <button 
-        disabled={!write}
-        onClick={() => write?.()}
-        className = "bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
+    <div className="">
+      <button
+        disabled={!mintWrite}
+        onClick={() => mintWrite?.()}
+        className="bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
       >
         MintFakeBAYC
       </button>
-
-      <button 
-        onClick={handleRefresh}
-        className = "bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
+      <button
+        disabled={!approveWrite}
+        onClick={() => approveWrite?.()}
+        className="bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
       >
-        Refresh
-        </button>
+        ApproveFBAYC
+      </button>
+      <p>Token id (The token id to be approved): {approveTokenId}</p>
+      <input
+        className="bg-black text-white border-2 border-white px-4 py-2 rounded-md w-1/6 h-8"
+        type="text"
+        value={approveTokenId}
+        onChange={handleChange}
+        placeholder="Enter token id"
+      />
     </div>
-  )
+  );
 }

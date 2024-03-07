@@ -117,6 +117,29 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "initiator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "nftAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nftTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteLoan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "nftAsset",
         "type": "address"
       },
@@ -178,6 +201,49 @@
         "internalType": "struct DataTypes.LoanData",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "nftAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nftTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getNftAssetHealthFactor",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getPersonalLoanTokenList",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",

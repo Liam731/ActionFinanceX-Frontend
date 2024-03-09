@@ -26,6 +26,8 @@ export default function MintFakeBAYC() {
     data: txHash,
     write: mintWrite,
     isSuccess,
+    isLoading: isPending,
+    error,
     reset,
   } = useContractWrite(mintConfig);
 
@@ -42,16 +44,16 @@ export default function MintFakeBAYC() {
   return (
     <div className="">
       <button
-        disabled={!mintWrite}
+        disabled={!mintWrite || isPending}
         onClick={() => mintWrite?.()}
-        className="bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
+        className="bg-teal-600 hover:bg-teal-700 rounded-lg px-5 py-3 text-2xl"
       >
-        MintFakeBAYC
+        {isPending ? 'Confirming...' : 'MintFakeBAYC'} 
       </button>
-      <button
+      {/* <button
         disabled={!approveWrite}
         onClick={() => approveWrite?.()}
-        className="bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
+        className="bg-teal-600 hover:bg-teal-700 rounded-lg px-5 py-3 text-2xl"
       >
         ApproveFBAYC
       </button>
@@ -62,7 +64,7 @@ export default function MintFakeBAYC() {
         value={approveTokenId}
         onChange={handleChange}
         placeholder="Enter token id"
-      />
+      /> */}
     </div>
   );
 }

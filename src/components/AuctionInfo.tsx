@@ -1,82 +1,160 @@
 import React, { useEffect, useState } from "react";
-import { useAccount, useContractRead } from "wagmi";
+import { useContractRead } from "wagmi";
 import { CONFIG } from "../../config";
 import PunkWarriorErc721 from "../abis/PunkWarriorErc721.json";
-import Decimal from "decimal.js";
-import { list } from "postcss";
+import Web3 from "web3";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  TableCaption,
+  AbsoluteCenter,
+} from "@chakra-ui/react";
 
 export default function AuctionInfo() {
-  const [startTime, setStartTime] = useState<String>("0");
-  const [endTime, setEndTime] = useState<String>("0");
-  const [timeStep, setTimeStep] = useState<String>("0");
-  const [startPrice, setStartPrice] = useState<String>("0");
-  const [endPrice, setEndPrice] = useState<String>("0");
-  const [lastBidPrice, setLastBidPrice] = useState<String>("0");
-  const [priceStep, setPriceStep] = useState<String>("0");
-  const [totalForAuction, setTotalForAuction] = useState<String>("0");
-  const [totalBids, setTotalBids] = useState<String>("0");
-  const [isAuctionActivated, setIsAuctionActivated] = useState<String>("0");
-  const [isAllRefunded, setIsAllRefunded] = useState<String>("0");
   const [auctionIndex, setAuctionIndex] = useState<String>("0");
+  const [blockTimestamp, setBlockTimestamp] = useState<BigInt>(BigInt(0));
+  const [auctionInfo, setAuctionInfo] = useState<
+    Array<{ label: string; value: string; unit: string }>
+  >([]);
+  const { data: auctionIndexData, refetch: refetchAuctionIndex } =
+    useContractRead({
+      address: CONFIG.AUCTION_CONTRACT_ADDRESS,
+      abi: PunkWarriorErc721,
+      functionName: "auctionIndex",
+    });
 
-   // Auction index
-   const { data: auctionIndexData, refetch: refetchAuctionIndex } = useContractRead({
-    address: CONFIG.AUCTION_CONTRACT_ADDRESS,
-    abi: PunkWarriorErc721,
-    functionName: "auctionIndex",
-  });
-  console.log(auctionIndex);
   useEffect(() => {
     if (auctionIndexData) {
-        setAuctionIndex(auctionIndexData.toString());
+      setAuctionIndex(auctionIndexData.toString());
     }
   }, [auctionIndexData]);
 
-  // Auction data
-  const { data: auctionData, refetch: refetchAuction } = useContractRead({
+  const { data: auctionData, refetch: refetchAuctionData } = useContractRead({
     address: CONFIG.AUCTION_CONTRACT_ADDRESS,
     abi: PunkWarriorErc721,
     functionName: "auctionData",
-    args: [auctionIndexData],
+    args: [auctionIndex],
   });
-  const dataList = String(auctionData).split(",");
+
   useEffect(() => {
     if (auctionData) {
-      setStartTime(dataList[0]);
-      setEndTime(dataList[1]);
-      setTimeStep(dataList[2]);
-      setStartPrice(dataList[3]);
-      setEndPrice(dataList[4]);
-      setLastBidPrice(dataList[5]);
-      setPriceStep(dataList[6]);
-      setTotalForAuction(dataList[7]);
-      setTotalBids(dataList[8]);
-      setIsAuctionActivated(dataList[9]);
-      setIsAllRefunded(dataList[10]);
+      const dataList = String(auctionData).split(",");
+      setAuctionInfo([
+        {
+          label: "Auction start time",
+          value: formatTimestamp(dataList[0]),
+          unit: "",
+        },
+        {
+          label: "Auction end time",
+          value: formatTimestamp(dataList[1]),
+          unit: "",
+        },
+        {
+          label: "Duration between deductions",
+          value: dataList[2],
+          unit: "second",
+        },
+        { label: "Initial price", value: (Number(dataList[3]) / 1e18).toString(), unit: "1e18 SToken" },
+        { label: "Final price", value: (Number(dataList[4]) / 1e18).toString(), unit: "1e18 SToken" },
+        { label: "Last bid price", value: (Number(dataList[5]) / 1e18).toString(), unit: "1e18 SToken" },
+        {
+          label: "Amount decreased each time",
+          value: (Number(dataList[6]) / 1e18).toString(),
+          unit: "1e18 SToken",
+        },
+        {
+          label: "Maximum quantity of auction items",
+          value: dataList[7],
+          unit: "",
+        },
+        {
+          label: "Total number of bidders",
+          value: dataList[8],
+          unit: "people",
+        },
+        {
+          label: "Is the auction currently being activated",
+          value: dataList[9],
+          unit: "",
+        },
+        {
+          label: "Is the auction currently being refunded",
+          value: dataList[10],
+          unit: "",
+        },
+      ]);
     }
   }, [auctionData]);
 
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       refetchAuction();
-//       refetchAuctionIndex();
-//     }, 1000);
-//     return () => clearInterval(interval);
-//   }, []);
+  useEffect(() => {
+    async function fetchBlockTimestamp() {
+      const web3 = new Web3(
+        "https://mainnet.infura.io/v3/944d422c26d44000988fc92104bf51b8"
+      );
+      const latestBlockNumber = await web3.eth.getBlockNumber();
+      const block = await web3.eth.getBlock(latestBlockNumber);
+      const timestamp = block.timestamp;
+      setBlockTimestamp(timestamp);
+    }
+    fetchBlockTimestamp();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchAuctionData();
+      refetchAuctionIndex();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 格式化时间戳
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(Number(timestamp) * 1000);
+    return (
+      date.getFullYear() +
+      "/" +
+      (date.getMonth() + 1).toString().padStart(2, "0") +
+      "/" +
+      date.getDate().toString().padStart(2, "0") +
+      " " +
+      date.getHours().toString().padStart(2, "0") +
+      ":" +
+      date.getMinutes().toString().padStart(2, "0") +
+      ":" +
+      date.getSeconds().toString().padStart(2, "0")
+    );
+  };
 
   return (
     <div>
-      <p>startTime: {startTime}</p>
-      <p>endTime: {endTime}</p>
-      <p>timeStep: {timeStep}</p>
-      <p>startPrice: {startPrice}</p>
-      <p>endPrice: {endPrice}</p>
-      <p>lastBidPrice: {lastBidPrice}</p>
-      <p>priceStep: {priceStep}</p>
-      <p>totalForAuction: {totalForAuction}</p>
-      <p>totalBids: {totalBids}</p>
-      <p>isAuctionActivated: {isAuctionActivated}</p>
-      <p>isAllRefunded: {isAllRefunded}</p>
+        <TableContainer className="border-2 border-white mx-96 mt-10 py-5 pl-32 bg-gradient-to-r from-blue-800 via-blue-950 to-blue-800 rounded-lg">
+          <Table size="lg">
+            <TableCaption className="text-2xl mt-10 mx-64">Auction Info</TableCaption>
+            <Thead>
+              <Tr>
+                <Th>Parameter Name</Th>
+                <Th isNumeric>Value</Th>
+                <Th>Unit</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {auctionInfo.map((info, index) => (
+                <Tr key={index} className="border-b border-white">
+                  <Td>{info.label}</Td>
+                  <Td>{info.value}</Td>
+                  <Td>{info.unit}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
     </div>
   );
 }

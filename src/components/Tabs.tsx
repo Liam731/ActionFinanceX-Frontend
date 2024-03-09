@@ -6,15 +6,12 @@ import {
   Tab,
   TabPanel,
 } from "@chakra-ui/react";
-import MintFakeBAYC from "./MintFakeBAYC";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import ColleteralPool from "./ColleteralPool";
 import UserStatus from "./UserStatus";
-import SToken from "./SToken";
-import Profile from "./Profile";
-import DutchAuction from "./AuctionStatus";
 import AuctionStatus from "./AuctionStatus";
 import AuctionInfo from "./AuctionInfo";
+import Bid from "./Bid";
 export default function Tabs() {
   const [activeTab, setActiveTab] = useState(0);
   return (
@@ -33,7 +30,7 @@ export default function Tabs() {
                   : ""
               }`}
             >
-              Your status
+              YOUR STATUS
             </Tab>
             <Tab
               className={`px-4 py-2 rounded-t-lg ${
@@ -42,7 +39,7 @@ export default function Tabs() {
                   : ""
               }`}
             >
-              Collateral pool
+              COLLATERAL POOL
             </Tab>
             <Tab
               className={`px-4 py-2 rounded-t-lg ${
@@ -51,7 +48,7 @@ export default function Tabs() {
                   : ""
               }`}
             >
-              Dutch Auction
+              DUTCH AUCTION
             </Tab>
           </div>
           <ConnectButton />
@@ -61,13 +58,12 @@ export default function Tabs() {
             <UserStatus />
           </TabPanel>
           <TabPanel>
-            <MintFakeBAYC />
             <ColleteralPool />
-            <SToken />
           </TabPanel>
           <TabPanel>
             <AuctionStatus />
             <AuctionInfo />
+            <Bid />
           </TabPanel>
         </TabPanels>
       </ChakraTabs>

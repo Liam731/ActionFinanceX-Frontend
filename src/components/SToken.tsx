@@ -24,7 +24,7 @@ export default function MintFakeBAYC() {
       <button
         disabled={!approveWrite}
         onClick={() => approveWrite?.()}
-        className="bg-slate-500 hover:bg-slate-700 rounded-lg px-5 py-3 text-2xl"
+        className="bg-teal-600 hover:bg-teal-700 rounded-lg px-5 py-3 text-2xl"
       >
         ApproveSToken
       </button>
